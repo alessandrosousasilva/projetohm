@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
-import { Gift, X, Copy, CheckCircle, HeartHandshake, Coins, QrCode } from 'lucide-react'
+import { Gift, X, Copy, CheckCircle, HeartHandshake, Coins, QrCode, PartyPopper } from 'lucide-react'
 import { tailspin } from 'ldrs'
+import confetti from 'canvas-confetti'
 
 // Importando a foto de vocês
 import imagemCasal from './assets/imagem_casal.jpeg'
@@ -23,25 +24,28 @@ export default function App() {
   const [carregandoPix, setCarregandoPix] = useState(false)
   const [copiado, setCopiado] = useState(false)
 
-  // Estado para o filtro de categorias
   const [filtroAtual, setFiltroAtual] = useState('Todos')
   const categorias = ['Todos', 'Sala', 'Quarto', 'Cozinha', 'Banheiro', 'Lavanderia', 'Eletrodomésticos']
 
   const [pixReal, setPixReal] = useState('')
   const [qrCodeImg, setQrCodeImg] = useState('')
+  
+  // Novo estado para guardar o ID da transação no banco e ouvir as mudanças
+  const [idTransacaoAtual, setIdTransacaoAtual] = useState(null)
+
+  const carregarItens = async () => {
+    const { data, error } = await supabase
+      .from('itens')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (error) console.error('Erro ao buscar presentes:', error)
+    else setItens(data)
+    
+    setLoading(false)
+  }
 
   useEffect(() => {
-    async function carregarItens() {
-      const { data, error } = await supabase
-        .from('itens')
-        .select('*')
-        .order('created_at', { ascending: false })
-      
-      if (error) console.error('Erro ao buscar presentes:', error)
-      else setItens(data)
-      
-      setLoading(false)
-    }
     carregarItens()
   }, [])
 
@@ -50,10 +54,48 @@ export default function App() {
     else document.body.classList.remove('modal-aberto')
   }, [modalAberto])
 
+  // EFEITO DE TEMPO REAL: Escutando o Supabase
+  useEffect(() => {
+    if (etapaModal === 'pix' && idTransacaoAtual) {
+      const channel = supabase
+        .channel(`transacao_${idTransacaoAtual}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'transacoes',
+            filter: `id=eq.${idTransacaoAtual}`
+          },
+          (payload) => {
+            if (payload.new.status_pagamento === 'aprovado') {
+              // Estoura os confetes!
+              confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#14b8a6', '#fcd34d', '#3b82f6']
+              })
+              setEtapaModal('sucesso')
+              // Recarrega os itens silenciosamente para atualizar a barra de progresso no fundo
+              carregarItens()
+            }
+          }
+        )
+        .subscribe()
+
+      // Limpa o canal quando o modal fechar ou mudar de tela
+      return () => {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [etapaModal, idTransacaoAtual])
+
   const abrirModal = (item) => {
     setItemSelecionado(item)
     setModalAberto(true)
     setEtapaModal('formulario')
+    setIdTransacaoAtual(null)
   }
 
   const fecharModal = () => {
@@ -63,6 +105,7 @@ export default function App() {
     setMensagem('')
     setValor('')
     setCopiado(false)
+    setIdTransacaoAtual(null)
   }
 
   const lidarComPagamento = async (e) => {
@@ -70,7 +113,6 @@ export default function App() {
     setCarregandoPix(true)
 
     try {
-      // 1. Pede pro Supabase gerar o PIX no Mercado Pago
       const { data: pixData, error: pixError } = await supabase.functions.invoke('gerar-pix', {
         body: { 
           valor: valor, 
@@ -81,8 +123,8 @@ export default function App() {
 
       if (pixError) throw pixError
 
-      // 2. Salva a transação no banco com o ID do Mercado Pago
-      const { error: dbError } = await supabase
+      // Salva e retorna o registro criado (.select().single())
+      const { data: dbData, error: dbError } = await supabase
         .from('transacoes')
         .insert([{
           item_id: itemSelecionado.id,
@@ -90,35 +132,35 @@ export default function App() {
           mensagem: mensagem,
           valor_pago: parseFloat(valor),
           status_pagamento: 'pendente',
-          id_mercado_pago: String(pixData.id_transacao_mp) 
+          id_mercado_pago: String(pixData.id_transacao_mp)
         }])
+        .select()
+        .single()
 
       if (dbError) throw dbError
 
-      // 3. Atualiza a tela com o PIX verdadeiro
       setPixReal(pixData.pix_copia_e_cola)
       setQrCodeImg(`data:image/jpeg;base64,${pixData.qr_code_base64}`)
+      setIdTransacaoAtual(dbData.id) // Guarda o ID para o WebSocket escutar
       
       setCarregandoPix(false)
       setEtapaModal('pix')
 
     } catch (error) {
       console.error('Erro geral:', error)
-      alert('Deu merda ao gerar o PIX. Tente novamente.')
+      alert('Deu erro ao gerar o PIX. Tente novamente.')
       setCarregandoPix(false)
     }
   }
 
   const copiarPix = () => {
-    navigator.clipboard.writeText(pixReal) 
+    navigator.clipboard.writeText(pixReal)
     setCopiado(true)
     setTimeout(() => setCopiado(false), 3000)
   }
 
-  // Lógica de filtragem dos itens
   const itensFiltrados = itens.filter(item => {
     if (filtroAtual === 'Todos') return true
-    // Compara ignorando maiúsculas/minúsculas para evitar bugs
     return item.categoria?.toLowerCase() === filtroAtual.toLowerCase()
   })
 
@@ -133,19 +175,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen pb-24 font-sans relative selection:bg-emerald-200">
-      {/* Background Dinâmico Animated Glassmorphism */}
       <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none -z-10 bg-slate-50">
-        {/* Bolha Verde Esmeralda */}
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 sm:w-[500px] sm:h-[500px] rounded-full bg-emerald-200/50 mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-        {/* Bolha Teal (Azul-esverdeado) */}
         <div className="absolute top-[20%] right-[-10%] w-96 h-96 sm:w-[500px] sm:h-[500px] rounded-full bg-teal-200/50 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
-        {/* Bolha Verde Claro */}
         <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 sm:w-[600px] sm:h-[600px] rounded-full bg-green-100/50 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
         
-        {/* Cabeçalho com Foto */}
         <header className="mb-16 text-center flex flex-col items-center">
           <div className="relative mb-8 group">
             <div className="absolute inset-0 bg-emerald-200 rounded-full blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
@@ -164,12 +201,10 @@ export default function App() {
           </p>
         </header>
 
-        {/* Seção: Como nos ajudar? (Tutorial Compacto) */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 md:p-6 shadow-sm border border-slate-200/60 mb-12 max-w-2xl mx-auto">
           <h2 className="font-serif text-lg font-bold text-center text-slate-800 mb-5">Como funciona?</h2>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-            
             <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4 first:pt-0">
               <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
                 <HeartHandshake className="w-5 h-5" />
@@ -193,11 +228,9 @@ export default function App() {
               <h3 className="font-bold text-sm text-slate-800 mb-1">3. Faça o PIX</h3>
               <p className="text-xs text-slate-500 leading-relaxed">Gere o código e pague direto no app do banco.</p>
             </div>
-            
           </div>
         </div>
 
-        {/* Filtro de Categorias (Horizontal Scroll no Mobile) */}
         <div className="mb-10 flex overflow-x-auto gap-3 pb-4 snap-x hide-scrollbar sm:justify-center">
           {categorias.map((cat) => (
             <button
@@ -214,14 +247,12 @@ export default function App() {
           ))}
         </div>
 
-        {/* Grid de Presentes */}
         {itensFiltrados.length === 0 ? (
           <div className="text-center py-20">
             <Gift className="w-16 h-16 text-slate-200 mx-auto mb-4" />
             <p className="text-slate-500 text-lg">Nenhum item adicionado nesta categoria ainda.</p>
           </div>
         ) : (
-          /* Aqui definimos 2 colunas no mobile e 4 no PC (lg) */
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
             {itensFiltrados.map((item) => {
               const porcentagem = Math.min((item.valor_arrecadado / item.valor_meta) * 100, 100).toFixed(1)
@@ -231,7 +262,6 @@ export default function App() {
                   key={item.id} 
                   className="group bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100/50 overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-500 flex flex-col"
                 >
-                  {/* Imagem menor no celular (h-36) e maior no PC (h-48/h-56) */}
                   <div className="h-36 sm:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                     {item.imagem_url ? (
                       <img 
@@ -251,7 +281,6 @@ export default function App() {
                     )}
                   </div>
                   
-                  {/* Espaçamento interno menor no celular (p-4) e normal no PC (p-6/p-8) */}
                   <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
                     <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-1 sm:mb-2 leading-tight">{item.nome}</h3>
                     <p className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-8 line-clamp-2 leading-relaxed flex-1">{item.descricao}</p>
@@ -300,10 +329,8 @@ export default function App() {
         )}
       </div>
 
-      {/* Modal / Bottom Sheet (Mantido igual ao anterior) */}
       {modalAberto && itemSelecionado && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4 transition-opacity">
-          
           <div 
             className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl relative flex flex-col max-h-[90vh] animate-slide-up"
             onClick={(e) => e.stopPropagation()}
@@ -320,7 +347,7 @@ export default function App() {
             </button>
             
             <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
-              {etapaModal === 'formulario' ? (
+              {etapaModal === 'formulario' && (
                 <div>
                   <h2 className="font-serif text-3xl font-bold text-slate-800 mb-2">Colaborador</h2>
                   <p className="text-slate-600 mb-8 text-sm">Ajudando na compra de: <strong className="text-slate-800 font-semibold">{itemSelecionado.nome}</strong></p>
@@ -379,22 +406,22 @@ export default function App() {
                     </button>
                   </form>
                 </div>
-              ) : (
+              )}
+
+              {etapaModal === 'pix' && (
                 <div className="flex flex-col items-center text-center pt-2 pb-6">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle className="w-8 h-8 text-emerald-500" />
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                    <l-tailspin size="30" stroke="3" speed="0.9" color="#10b981"></l-tailspin>
                   </div>
-                  <h2 className="font-serif text-3xl font-bold text-slate-800 mb-3">PIX Gerado!</h2>
+                  <h2 className="font-serif text-3xl font-bold text-slate-800 mb-3">Aguardando Pagamento</h2>
                   <p className="text-slate-600 mb-8 leading-relaxed">Escaneie o QR Code ou copie o código abaixo para pagar direto no app do seu banco.</p>
                   
                   <div className="bg-white border-2 border-slate-100 p-4 rounded-3xl mb-8 shadow-sm">
-                    {/* Imagem agora usa o Base64 que vem do Mercado Pago */}
                     <img src={qrCodeImg} alt="QR Code PIX" className="w-48 h-48 mix-blend-multiply" />
                   </div>
 
                   <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6 relative group">
                     <p className="text-xs text-slate-500 truncate font-mono select-all pr-8">
-                      {/* Texto agora mostra a chave real que vem do Mercado Pago */}
                       {pixReal}
                     </p>
                   </div>
@@ -420,9 +447,28 @@ export default function App() {
                     )}
                   </button>
                   
-                  <p className="text-xs text-slate-400 mt-6 font-medium uppercase tracking-wider">
-                    A confirmação é automática
+                  <p className="text-xs text-emerald-600 font-semibold mt-6 uppercase tracking-wider animate-pulse">
+                    Esta tela atualizará sozinha
                   </p>
+                </div>
+              )}
+
+              {etapaModal === 'sucesso' && (
+                <div className="flex flex-col items-center text-center pt-10 pb-8 animate-in fade-in zoom-in duration-500">
+                  <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                    <PartyPopper className="w-12 h-12 text-emerald-500" />
+                  </div>
+                  <h2 className="font-serif text-4xl font-bold text-slate-800 mb-4">Muuuuito Obrigado!</h2>
+                  <p className="text-slate-600 mb-8 leading-relaxed text-lg">
+                    Seu PIX foi confirmado. <strong className="text-emerald-600">{nome}</strong>, você acabou de nos ajudar a chegar mais perto do nosso sonho.
+                  </p>
+                  
+                  <button 
+                    onClick={fecharModal}
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Voltar para a Lista
+                  </button>
                 </div>
               )}
             </div>
