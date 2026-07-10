@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+@theme {
+  /* Registrando as fontes do Google */
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-serif: "Playfair Display", serif;
+
+  /* Animação do gradiente e do Modal Bottom Sheet */
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-slide-up: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Evita que o fundo role quando o modal abre no celular */
+body:has(.modal-aberto) {
+  overflow: hidden;
+}
