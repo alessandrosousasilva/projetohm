@@ -90,7 +90,7 @@ export default function App() {
           mensagem: mensagem,
           valor_pago: parseFloat(valor),
           status_pagamento: 'pendente',
-          // Opcional: crie uma coluna id_mercado_pago na tabela se quiser rastrear depois
+          id_mercado_pago: String(pixData.id_transacao_mp) 
         }])
 
       if (dbError) throw dbError
