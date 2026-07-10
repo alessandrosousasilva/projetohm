@@ -283,7 +283,6 @@ export default function App() {
                   
                   <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
                     <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-1 sm:mb-2 leading-tight">{item.nome}</h3>
-                    <p className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-8 line-clamp-2 leading-relaxed flex-1">{item.descricao}</p>
                     
                     <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
                       <div className="flex flex-col xl:flex-row xl:justify-between xl:items-end gap-1">
