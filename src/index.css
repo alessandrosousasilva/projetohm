@@ -1,13 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  /* Registrando as fontes do Google */
   --font-sans: "Plus Jakarta Sans", sans-serif;
   --font-serif: "Playfair Display", serif;
 
-  /* Animação do gradiente e do Modal Bottom Sheet */
   --animate-shimmer: shimmer 2.5s linear infinite;
   --animate-slide-up: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  /* Nova animação do fundo dinâmico */
+  --animate-blob: blob 10s infinite;
 }
 
 @keyframes shimmer {
@@ -30,7 +31,30 @@
   }
 }
 
-/* Evita que o fundo role quando o modal abre no celular */
+/* Movimento suave e fluido das bolhas de cor */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+/* Classes para atrasar a animação e criar um ritmo natural */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
 body:has(.modal-aberto) {
   overflow: hidden;
 }

@@ -113,8 +113,16 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-24 font-sans relative selection:bg-emerald-200">
-      <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-emerald-50 to-[#F8FAFC] -z-10"></div>
+    <div className="min-h-screen pb-24 font-sans relative selection:bg-emerald-200">
+      {/* Background Dinâmico Animated Glassmorphism */}
+      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none -z-10 bg-slate-50">
+        {/* Bolha Verde Esmeralda */}
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 sm:w-[500px] sm:h-[500px] rounded-full bg-emerald-200/50 mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        {/* Bolha Teal (Azul-esverdeado) */}
+        <div className="absolute top-[20%] right-[-10%] w-96 h-96 sm:w-[500px] sm:h-[500px] rounded-full bg-teal-200/50 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        {/* Bolha Verde Claro */}
+        <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 sm:w-[600px] sm:h-[600px] rounded-full bg-green-100/50 mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
         
@@ -137,35 +145,36 @@ export default function App() {
           </p>
         </header>
 
-        {/* Seção: Como nos ajudar? (Tutorial) */}
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 mb-16 max-w-4xl mx-auto relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400"></div>
-          <h2 className="font-serif text-2xl font-bold text-center text-slate-800 mb-8">Como funciona?</h2>
+        {/* Seção: Como nos ajudar? (Tutorial Compacto) */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 md:p-6 shadow-sm border border-slate-200/60 mb-12 max-w-2xl mx-auto">
+          <h2 className="font-serif text-lg font-bold text-center text-slate-800 mb-5">Como funciona?</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                <HeartHandshake className="w-7 h-7" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+            
+            <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4 first:pt-0">
+              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
+                <HeartHandshake className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-slate-800 mb-2">1. Escolha o presente</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">Navegue pela lista abaixo e escolha qual item ou cômodo você quer ajudar a montar.</p>
+              <h3 className="font-bold text-sm text-slate-800 mb-1">1. Escolha</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">Selecione o item que deseja ajudar a montar.</p>
             </div>
             
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                <Coins className="w-7 h-7" />
+            <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
+                <Coins className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-slate-800 mb-2">2. Defina o valor</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">Você não precisa pagar o valor total. Contribua com a quantia que tocar no seu coração.</p>
+              <h3 className="font-bold text-sm text-slate-800 mb-1">2. Contribua</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">Defina o valor. Qualquer quantia é bem-vinda!</p>
             </div>
 
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
-                <QrCode className="w-7 h-7" />
+            <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
+                <QrCode className="w-5 h-5" />
               </div>
-              <h3 className="font-bold text-slate-800 mb-2">3. Faça o PIX</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">Gere o código copia e cola, pague no app do seu banco e a barra de progresso anda na hora!</p>
+              <h3 className="font-bold text-sm text-slate-800 mb-1">3. Faça o PIX</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">Gere o código e pague direto no app do banco.</p>
             </div>
+            
           </div>
         </div>
 
@@ -193,16 +202,18 @@ export default function App() {
             <p className="text-slate-500 text-lg">Nenhum item adicionado nesta categoria ainda.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          /* Aqui definimos 2 colunas no mobile e 4 no PC (lg) */
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
             {itensFiltrados.map((item) => {
               const porcentagem = Math.min((item.valor_arrecadado / item.valor_meta) * 100, 100).toFixed(1)
               
               return (
                 <div 
                   key={item.id} 
-                  className="group bg-white rounded-3xl shadow-sm border border-slate-100/50 overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-500 flex flex-col"
+                  className="group bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100/50 overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-500 flex flex-col"
                 >
-                  <div className="h-56 overflow-hidden bg-slate-100 relative">
+                  {/* Imagem menor no celular (h-36) e maior no PC (h-48/h-56) */}
+                  <div className="h-36 sm:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                     {item.imagem_url ? (
                       <img 
                         src={item.imagem_url} 
@@ -211,37 +222,38 @@ export default function App() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Gift className="w-12 h-12 text-slate-300" />
+                        <Gift className="w-8 h-8 sm:w-12 sm:h-12 text-slate-300" />
                       </div>
                     )}
                     {porcentagem >= 100 && (
-                      <div className="absolute top-4 right-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        Meta Atingida!
+                      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-emerald-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 rounded-full shadow-lg">
+                        Atingida!
                       </div>
                     )}
                   </div>
                   
-                  <div className="p-6 md:p-8 flex flex-col flex-1">
-                    <h3 className="font-serif text-2xl font-bold text-slate-800 mb-2 leading-tight">{item.nome}</h3>
-                    <p className="text-sm text-slate-500 mb-8 line-clamp-2 leading-relaxed flex-1">{item.descricao}</p>
+                  {/* Espaçamento interno menor no celular (p-4) e normal no PC (p-6/p-8) */}
+                  <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
+                    <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-1 sm:mb-2 leading-tight">{item.nome}</h3>
+                    <p className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-8 line-clamp-2 leading-relaxed flex-1">{item.descricao}</p>
                     
-                    <div className="space-y-3 mb-8">
-                      <div className="flex justify-between items-end">
+                    <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
+                      <div className="flex flex-col xl:flex-row xl:justify-between xl:items-end gap-1">
                         <div>
-                          <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">Arrecadado</p>
-                          <span className="font-bold text-lg text-slate-800">
+                          <p className="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5 sm:mb-1">Arrecadado</p>
+                          <span className="font-bold text-sm sm:text-lg text-slate-800">
                             R$ {item.valor_arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </span>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">Meta</p>
-                          <span className="text-slate-500 font-medium">
+                        <div className="xl:text-right">
+                          <p className="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5 sm:mb-1">Meta</p>
+                          <span className="text-xs sm:text-sm text-slate-500 font-medium">
                             R$ {item.valor_meta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </span>
                         </div>
                       </div>
                       
-                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div className="w-full bg-slate-100 rounded-full h-1.5 sm:h-2.5 overflow-hidden">
                         <div 
                           className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full transition-all duration-1000 ease-out relative"
                           style={{ width: `${porcentagem}%` }}
@@ -253,11 +265,11 @@ export default function App() {
 
                     <button 
                       onClick={() => abrirModal(item)}
-                      className="relative w-full inline-flex h-14 items-center justify-center overflow-hidden rounded-2xl bg-slate-900 text-white font-medium shadow-md transition-all hover:scale-[1.02] hover:shadow-xl hover:bg-slate-800 active:scale-95 cursor-pointer"
+                      className="relative w-full inline-flex h-10 sm:h-14 items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900 text-white text-xs sm:text-base font-medium shadow-md transition-all hover:scale-[1.02] hover:shadow-xl hover:bg-slate-800 active:scale-95 cursor-pointer"
                     >
                       <span className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,0),45%,rgba(255,255,255,0.15),55%,rgba(255,255,255,0))] bg-[length:200%_100%] animate-shimmer"></span>
-                      <span className="relative flex items-center gap-2">
-                        <Gift className="w-4 h-4" />
+                      <span className="relative flex items-center gap-1.5 sm:gap-2">
+                        <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
                         Presentear
                       </span>
                     </button>
