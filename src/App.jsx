@@ -27,7 +27,8 @@ export default function App() {
   const [filtroAtual, setFiltroAtual] = useState('Todos')
   const categorias = ['Todos', 'Sala', 'Quarto', 'Cozinha', 'Banheiro', 'Lavanderia', 'Eletrodomésticos']
 
-  const pixCopiaECola = "00020126580014br.gov.bcb.pix0136123e4567-e89b-12d3-a456-426614174000520400005303986540510.005802BR5913Heron e Malu6008BRASILIA62070503***63041A2B"
+  const [pixReal, setPixReal] = useState('')
+  const [qrCodeImg, setQrCodeImg] = useState('')
 
   useEffect(() => {
     async function carregarItens() {
@@ -68,30 +69,48 @@ export default function App() {
     e.preventDefault()
     setCarregandoPix(true)
 
-    const { error } = await supabase
-      .from('transacoes')
-      .insert([{
-        item_id: itemSelecionado.id,
-        nome_doador: nome,
-        mensagem: mensagem,
-        valor_pago: parseFloat(valor),
-        status_pagamento: 'pendente'
-      }])
+    try {
+      // 1. Pede pro Supabase gerar o PIX no Mercado Pago
+      const { data: pixData, error: pixError } = await supabase.functions.invoke('gerar-pix', {
+        body: { 
+          valor: valor, 
+          descricao: `Presente: ${itemSelecionado.nome}`,
+          nome: nome 
+        }
+      })
 
-    if (error) {
-      alert('Ocorreu um erro. Tente novamente.')
-      setCarregandoPix(false)
-      return
-    }
+      if (pixError) throw pixError
 
-    setTimeout(() => {
+      // 2. Salva a transação no banco com o ID do Mercado Pago
+      const { error: dbError } = await supabase
+        .from('transacoes')
+        .insert([{
+          item_id: itemSelecionado.id,
+          nome_doador: nome,
+          mensagem: mensagem,
+          valor_pago: parseFloat(valor),
+          status_pagamento: 'pendente',
+          // Opcional: crie uma coluna id_mercado_pago na tabela se quiser rastrear depois
+        }])
+
+      if (dbError) throw dbError
+
+      // 3. Atualiza a tela com o PIX verdadeiro
+      setPixReal(pixData.pix_copia_e_cola)
+      setQrCodeImg(`data:image/jpeg;base64,${pixData.qr_code_base64}`)
+      
       setCarregandoPix(false)
       setEtapaModal('pix')
-    }, 1500)
+
+    } catch (error) {
+      console.error('Erro geral:', error)
+      alert('Deu merda ao gerar o PIX. Tente novamente.')
+      setCarregandoPix(false)
+    }
   }
 
   const copiarPix = () => {
-    navigator.clipboard.writeText(pixCopiaECola)
+    navigator.clipboard.writeText(pixReal) 
     setCopiado(true)
     setTimeout(() => setCopiado(false), 3000)
   }
@@ -369,12 +388,14 @@ export default function App() {
                   <p className="text-slate-600 mb-8 leading-relaxed">Escaneie o QR Code ou copie o código abaixo para pagar direto no app do seu banco.</p>
                   
                   <div className="bg-white border-2 border-slate-100 p-4 rounded-3xl mb-8 shadow-sm">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014br.gov.bcb.pix" alt="QR Code PIX" className="w-48 h-48 mix-blend-multiply" />
+                    {/* Imagem agora usa o Base64 que vem do Mercado Pago */}
+                    <img src={qrCodeImg} alt="QR Code PIX" className="w-48 h-48 mix-blend-multiply" />
                   </div>
 
                   <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-6 relative group">
                     <p className="text-xs text-slate-500 truncate font-mono select-all pr-8">
-                      {pixCopiaECola}
+                      {/* Texto agora mostra a chave real que vem do Mercado Pago */}
+                      {pixReal}
                     </p>
                   </div>
 
