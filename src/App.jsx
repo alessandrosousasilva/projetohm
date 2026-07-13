@@ -74,7 +74,8 @@ export default function App() {
                 particleCount: 150,
                 spread: 70,
                 origin: { y: 0.6 },
-                colors: ['#10b981', '#14b8a6', '#fcd34d', '#3b82f6']
+                colors: ['#10b981', '#14b8a6', '#fcd34d', '#3b82f6'],
+                zIndex: 99999
               })
               setEtapaModal('sucesso')
               // Recarrega os itens silenciosamente para atualizar a barra de progresso no fundo
