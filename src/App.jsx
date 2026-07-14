@@ -199,7 +199,7 @@ export default function App() {
             />
           </div>
           
-          {/* Título.  o z-index para 20 para ele ficar por cima da foto */}
+          {/* Título. Aumentamos o z-index para 20 para ele ficar por cima da foto */}
           <h1 className="relative font-serif text-6xl md:text-[5.5rem] font-bold text-slate-800 mb-6 tracking-tight z-20 leading-none pt-4 drop-shadow-sm">
             Heron <span className="text-emerald-500 font-light italic">&</span> Malu
           </h1>
@@ -225,6 +225,7 @@ export default function App() {
           ))}
         </div>
 
+        {/* Grid de Presentes */}
         {itensFiltrados.length === 0 ? (
           <div className="text-center py-20">
             <Gift className="w-16 h-16 text-slate-200 mx-auto mb-4" />
@@ -240,6 +241,7 @@ export default function App() {
                   key={item.id} 
                   className="group bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100/50 overflow-hidden hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-500 flex flex-col"
                 >
+                  {/* Container da Imagem */}
                   <div className="h-36 sm:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                     {item.imagem_url ? (
                       <img 
@@ -259,45 +261,59 @@ export default function App() {
                     )}
                   </div>
                   
+                  {/* Container dos Textos e Botão */}
                   <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-1">
-                    <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-1 sm:mb-2 leading-tight">{item.nome}</h3>
                     
-                    <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
-                      <div className="flex flex-col xl:flex-row xl:justify-between xl:items-end gap-1">
-                        <div>
-                          <p className="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5 sm:mb-1">Arrecadado</p>
-                          <span className="font-bold text-sm sm:text-lg text-slate-800">
-                            R$ {item.valor_arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </span>
-                        </div>
-                        <div className="xl:text-right">
-                          <p className="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5 sm:mb-1">Meta</p>
-                          <span className="text-xs sm:text-sm text-slate-500 font-medium">
-                            R$ {item.valor_meta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </span>
-                        </div>
-                      </div>
+                    {/* Título do Presente */}
+                    <h3 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-slate-800 mb-2 leading-tight">
+                      {item.nome}
+                    </h3>
+                    
+                    {/* Alinhamento no fundo do card */}
+                    <div className="mt-auto w-full pt-4">
                       
-                      <div className="w-full bg-slate-100 rounded-full h-1.5 sm:h-2.5 overflow-hidden">
-                        <div 
-                          className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full transition-all duration-1000 ease-out relative"
-                          style={{ width: `${porcentagem}%` }}
-                        >
-                          <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                      <div className="space-y-3 mb-6">
+                        {/* Valores e Meta */}
+                        <div className="flex justify-between items-end gap-2">
+                          <div className="text-left">
+                            <p className="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5">Arrecadado</p>
+                            <span className="font-bold text-sm sm:text-lg text-slate-800">
+                              R$ {item.valor_arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mb-0.5">Meta</p>
+                            <span className="text-xs sm:text-sm text-slate-500 font-medium">
+                              R$ {item.valor_meta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Barra de Progresso */}
+                        <div className="w-full bg-slate-100 rounded-full h-1.5 sm:h-2.5 overflow-hidden">
+                          <div 
+                            className="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full transition-all duration-1000 ease-out relative"
+                            style={{ width: `${porcentagem}%` }}
+                          >
+                            <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <button 
-                      onClick={() => abrirModal(item)}
-                      className="relative w-full inline-flex h-10 sm:h-14 items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900 text-white text-xs sm:text-base font-medium shadow-md transition-all hover:scale-[1.02] hover:shadow-xl hover:bg-slate-800 active:scale-95 cursor-pointer"
-                    >
-                      <span className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,0),45%,rgba(255,255,255,0.15),55%,rgba(255,255,255,0))] bg-[length:200%_100%] animate-shimmer"></span>
-                      <span className="relative flex items-center gap-1.5 sm:gap-2">
-                        <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Presentear
-                      </span>
-                    </button>
+                      {/* Botão */}
+                      <button 
+                        onClick={() => abrirModal(item)}
+                        className="relative w-full inline-flex h-10 sm:h-14 items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl bg-slate-900 text-white text-xs sm:text-base font-medium shadow-md transition-all hover:scale-[1.02] hover:shadow-xl hover:bg-slate-800 active:scale-95 cursor-pointer"
+                      >
+                        <span className="absolute inset-0 bg-[linear-gradient(110deg,rgba(255,255,255,0),45%,rgba(255,255,255,0.15),55%,rgba(255,255,255,0))] bg-[length:200%_100%] animate-shimmer"></span>
+                        <span className="relative flex items-center gap-1.5 sm:gap-2">
+                          <Gift className="w-3 h-3 sm:w-4 sm:h-4" />
+                          Presentear
+                        </span>
+                      </button>
+                    </div>
+                    
                   </div>
                 </div>
               )
