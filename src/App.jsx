@@ -184,20 +184,27 @@ export default function App() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16">
         
-        <header className="mb-16 text-center flex flex-col items-center">
-          <div className="relative mb-8 group">
-            <div className="absolute inset-0 bg-emerald-200 rounded-full blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
+        {/* Cabeçalho com Foto */}
+        <header className="mb-16 text-center flex flex-col items-center pt-6">
+          
+          {/* Container da foto. Reduzimos o z-index para 0 para ir para o fundo */}
+          <div className="relative -mb-10 md:-mb-14 group z-0">
+            {/* Glow verde atrás da foto */}
+            <div className="absolute inset-0 bg-emerald-200 rounded-full blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+            
             <img 
               src={imagemCasal} 
               alt="Heron e Malu" 
-              className="relative w-40 h-40 md:w-48 md:h-48 object-cover rounded-full shadow-2xl border-4 border-white z-10"
+              className="relative w-64 h-64 md:w-80 md:h-80 object-cover rounded-full shadow-2xl border-4 md:border-8 border-white"
             />
           </div>
           
-          <h1 className="font-serif text-5xl md:text-7xl font-bold text-slate-800 mb-6 tracking-tight">
+          {/* Título.  o z-index para 20 para ele ficar por cima da foto */}
+          <h1 className="relative font-serif text-6xl md:text-[5.5rem] font-bold text-slate-800 mb-6 tracking-tight z-20 leading-none pt-4 drop-shadow-sm">
             Heron <span className="text-emerald-500 font-light italic">&</span> Malu
           </h1>
-          <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">
+          
+          <p className="relative text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed z-10 px-4">
             Ajude-nos a construir nosso novo lar. Todo valor é muito bem-vindo e fará parte da nossa história!
           </p>
         </header>
