@@ -202,36 +202,6 @@ export default function App() {
           </p>
         </header>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 md:p-6 shadow-sm border border-slate-200/60 mb-12 max-w-2xl mx-auto">
-          <h2 className="font-serif text-lg font-bold text-center text-slate-800 mb-5">Como funciona?</h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-2 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
-            <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4 first:pt-0">
-              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
-                <HeartHandshake className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm text-slate-800 mb-1">1. Escolha</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">Selecione o item que deseja ajudar a montar.</p>
-            </div>
-            
-            <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4">
-              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
-                <Coins className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm text-slate-800 mb-1">2. Contribua</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">Defina o valor. Qualquer quantia é bem-vinda!</p>
-            </div>
-
-            <div className="flex flex-col items-center text-center pt-4 sm:pt-0 sm:px-4">
-              <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-2">
-                <QrCode className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm text-slate-800 mb-1">3. Faça o PIX</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">Gere o código e pague direto no app do banco.</p>
-            </div>
-          </div>
-        </div>
-
         <div className="mb-10 flex overflow-x-auto gap-3 pb-4 snap-x hide-scrollbar sm:justify-center">
           {categorias.map((cat) => (
             <button
