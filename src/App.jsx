@@ -4,7 +4,7 @@ import { Gift, X, Copy, CheckCircle, HeartHandshake, Coins, QrCode, PartyPopper 
 import { tailspin } from 'ldrs'
 import confetti from 'canvas-confetti'
 
-// Importando a foto de vocês
+// Importando a foto 
 import imagemCasal from './assets/imagem_casal.jpeg'
 
 tailspin.register()
@@ -54,7 +54,7 @@ export default function App() {
     else document.body.classList.remove('modal-aberto')
   }, [modalAberto])
 
-  // EFEITO DE TEMPO REAL: Escutando o Supabase
+  // EFEITO: Escutando o Supabase
   useEffect(() => {
     if (etapaModal === 'pix' && idTransacaoAtual) {
       const channel = supabase
@@ -187,7 +187,7 @@ export default function App() {
         {/* Cabeçalho com Foto */}
         <header className="mb-16 text-center flex flex-col items-center pt-6">
           
-          {/* Container da foto. Reduzimos o z-index para 0 para ir para o fundo */}
+          {/* Container da foto */}
           <div className="relative -mb-10 md:-mb-14 group z-0">
             {/* Glow verde atrás da foto */}
             <div className="absolute inset-0 bg-emerald-200 rounded-full blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
@@ -199,8 +199,8 @@ export default function App() {
             />
           </div>
           
-          {/* Título. Aumentamos o z-index para 20 para ele ficar por cima da foto */}
-          <h1 className="relative font-serif text-6xl md:text-[5.5rem] font-bold text-slate-800 mb-6 tracking-tight z-20 leading-none pt-4 drop-shadow-sm">
+          {/* Título. O tamanho no mobile não quebrar a linha */}
+          <h1 className="relative font-serif text-4xl sm:text-5xl md:text-[5.5rem] font-bold text-slate-800 mb-6 tracking-tight z-20 leading-none pt-4 drop-shadow-sm whitespace-nowrap">
             Heron <span className="text-emerald-500 font-light italic">&</span> Malu
           </h1>
           
@@ -407,7 +407,7 @@ export default function App() {
                     <l-tailspin size="30" stroke="3" speed="0.9" color="#10b981"></l-tailspin>
                   </div>
                   <h2 className="font-serif text-3xl font-bold text-slate-800 mb-3">Aguardando Pagamento</h2>
-                  <p className="text-slate-600 mb-8 leading-relaxed">Escaneie o QR Code ou copie o código abaixo para pagar direto no app do seu banco.</p>
+                  <p className="text-slate-600 mb-8 leading-relaxed">Escaneie o QR Code ou copie o código abaixo para pagar.</p>
                   
                   <div className="bg-white border-2 border-slate-100 p-4 rounded-3xl mb-8 shadow-sm">
                     <img src={qrCodeImg} alt="QR Code PIX" className="w-48 h-48 mix-blend-multiply" />
