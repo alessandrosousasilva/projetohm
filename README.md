@@ -13,7 +13,7 @@
 
 > Um projeto nascido da amizade, construído com código e carinho para ajudar o casal Heron e Malu a iniciarem a vida no novo lar.
 
-Este projeto é uma plataforma personalizada de lista de presentes e arrecadação (estilo "vaquinha virtual").
+Este projeto é uma plataforma personalizada de lista de arrecadação (estilo "vaquinha virtual").
 
 ## ✨ Como Funciona
 
